@@ -1,0 +1,7 @@
+2024/11/10 10:30:15 [ERROR] Build failed: exit status 1
+go: downloading github.com/gin-gonic/gin v1.9.1
+go build -o api cmd/main.go
+2024/11/10 10:30:15 [ERROR] Stage dependencies not met for 'scan'
+2024/11/10 10:30:15 [ERROR] Missing required stages: [validate, build]  
+2024/11/10 10:30:15 [ERROR] Secret 'DEPLOY_TOKEN' exposed in logs
+2024/11/10 10:30:15 [WARN] Deployment without security validation

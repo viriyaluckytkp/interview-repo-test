@@ -1,0 +1,61 @@
+{
+  "Golang errors": {},
+  "Issues": [
+    {
+      "severity": "HIGH",
+      "confidence": "HIGH",
+      "cwe": {"ID": "798"},
+      "rule_id": "G101",
+      "details": "Potential hardcoded credentials",
+      "file": "/app/cmd/main.go",
+      "code": "const API_KEY = \"sk-prod-1234567890abcdef\"",
+      "line": "11"
+    },
+    {
+      "severity": "MEDIUM",
+      "confidence": "MEDIUM",
+      "cwe": {"ID": "22"},
+      "rule_id": "G304",
+      "details": "Potential file inclusion via variable",
+      "file": "/app/cmd/main.go",
+      "code": "file, _ := os.Open(fullPath)",
+      "line": "23"
+    },
+    {
+      "severity": "HIGH",
+      "confidence": "MEDIUM",
+      "cwe": {"ID": "78"},
+      "rule_id": "G204",
+      "details": "Subprocess launched with variable",
+      "file": "/app/cmd/main.go",
+      "code": "exec.Command(\"sh\", \"-c\", cmd).Output()",
+      "line": "30"
+    },
+    {
+      "severity": "MEDIUM",
+      "confidence": "HIGH",
+      "cwe": {"ID": "276"},
+      "rule_id": "G302",
+      "details": "Poor file permissions used",
+      "file": "/app/cmd/main.go", 
+      "code": "os.Create(\"/tmp/\" + header.Filename)",
+      "line": "37"
+    },
+    {
+      "severity": "LOW",
+      "confidence": "HIGH",
+      "cwe": {"ID": "703"},
+      "rule_id": "G104",
+      "details": "Errors unhandled",
+      "file": "/app/cmd/main.go",
+      "code": "http.ListenAndServe(\":\" + port, r)",
+      "line": "44"
+    }
+  ],
+  "Stats": {
+    "files": 1,
+    "lines": 45,
+    "nosec": 0,
+    "found": 5
+  }
+}

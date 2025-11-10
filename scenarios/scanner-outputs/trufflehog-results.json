@@ -1,0 +1,108 @@
+{
+  "version": "3.63.4",
+  "date": "2024-11-10T10:30:00Z",
+  "path": "/app",
+  "base64_encoded": false,
+  "sources": [
+    {
+      "type": "git",
+      "target": "/app",
+      "metadata": {
+        "commit": "abc123def456",
+        "repository": "devsecops-interview"
+      }
+    }
+  ],
+  "detectors": [
+    {
+      "type": "regex",
+      "verified": false,
+      "name": "AWS Access Key"
+    },
+    {
+      "type": "regex", 
+      "verified": false,
+      "name": "Slack Webhook"
+    }
+  ],
+  "results": [
+    {
+      "detector_type": "Custom",
+      "decoder_type": "PLAIN",
+      "verified": false,
+      "raw": "sk-prod-1234567890abcdef",
+      "raw_v2": "sk-prod-1234567890abcdef",
+      "redacted": "sk-prod-123***",
+      "extra_data": {
+        "rotate": true,
+        "version": 1
+      },
+      "structured_data": null,
+      "source_metadata": {
+        "data": {
+          "git": {
+            "commit": "abc123def456",
+            "file": "cmd/main.go",
+            "email": "dev@company.com", 
+            "repository": "devsecops-interview",
+            "timestamp": "2024-11-10 10:15:00 +0000 UTC",
+            "line": 15,
+            "visibility": "public"
+          }
+        }
+      }
+    },
+    {
+      "detector_type": "URI",
+      "decoder_type": "PLAIN", 
+      "verified": false,
+      "raw": "postgresql://admin:password123@db:5432/testdb",
+      "raw_v2": "postgresql://admin:password123@db:5432/testdb",
+      "redacted": "postgresql://admin:***@db:5432/testdb",
+      "extra_data": {
+        "rotate": false,
+        "version": 1
+      },
+      "structured_data": null,
+      "source_metadata": {
+        "data": {
+          "git": {
+            "commit": "abc123def456",
+            "file": ".env.example",
+            "email": "dev@company.com",
+            "repository": "devsecops-interview", 
+            "timestamp": "2024-11-09 14:22:00 +0000 UTC",
+            "line": 3,
+            "visibility": "public"
+          }
+        }
+      }
+    },
+    {
+      "detector_type": "Regex",
+      "decoder_type": "PLAIN",
+      "verified": false,
+      "raw": "test-key-not-real",
+      "raw_v2": "test-key-not-real",
+      "redacted": "test-key-***",
+      "extra_data": {
+        "rotate": false,
+        "version": 1
+      },
+      "structured_data": null,
+      "source_metadata": {
+        "data": {
+          "git": {
+            "commit": "def456ghi789", 
+            "file": "test/sample_test.go",
+            "email": "dev@company.com",
+            "repository": "devsecops-interview",
+            "timestamp": "2024-11-08 16:45:00 +0000 UTC",
+            "line": 8,
+            "visibility": "public"
+          }
+        }
+      }
+    }
+  ]
+}

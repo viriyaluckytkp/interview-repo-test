@@ -1,0 +1,22 @@
+image: golang:latest
+
+test:
+  stage: tests
+  script:
+    - go test ./...
+    - env > version.txt
+  artifacts:
+    paths:
+      - version.txt
+
+scan:
+  script:
+    - snyk test
+  dependencies:
+    - test
+
+deploy:
+  stage: deploy
+  script:
+    - echo "TOKEN=$DEPLOY_TOKEN"
+    - ./deploy.sh

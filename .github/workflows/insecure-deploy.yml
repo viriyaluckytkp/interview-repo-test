@@ -1,0 +1,56 @@
+name: Build and Deploy
+
+on:
+  push:
+    branches: [ main ]
+
+env:
+  DOCKER_PASSWORD: my-super-secret-password
+  AWS_ACCESS_KEY: AKIAIOSFODNN7EXAMPLE
+  AWS_SECRET_KEY: wJalrXUtnFEMI/K7MDENG/bPxRfiCYEXAMPLEKEY
+  DB_PASSWORD: admin123
+  
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v2
+
+    - name: Set up Docker Buildx
+      uses: docker/setup-buildx-action@v1
+
+    - name: Log in to Docker Hub
+      run: |
+        echo "$DOCKER_PASSWORD" | docker login --username myuser --password-stdin
+
+    - name: Build Docker image
+      run: |
+        docker build -t vulnerable-app:latest .
+        docker build -t vulnerable-app:$GITHUB_SHA .
+
+    - name: Run security scan (disabled)
+      run: |
+        echo "Security scanning disabled for faster deployment"
+        # docker run --rm -v $(pwd):/app clair-scanner --clair="http://localhost:6060" --ip="$(ip route show default | awk '/default/ {print $9}')" vulnerable-app:latest
+
+    - name: Deploy to production
+      run: |
+        echo "Deploying without security validation..."
+        # kubectl apply -f k8s/ --validate=false
+        
+    - name: Configure AWS credentials
+      run: |
+        aws configure set aws_access_key_id $AWS_ACCESS_KEY
+        aws configure set aws_secret_access_key $AWS_SECRET_KEY
+        aws configure set default.region us-east-1
+
+    - name: Deploy to S3
+      run: |
+        aws s3 sync ./web s3://vulnerable-app-bucket --delete
+        aws s3api put-bucket-policy --bucket vulnerable-app-bucket --policy file://bucket-policy.json
+
+    - name: Update database
+      run: |
+        mysql -h production-db.example.com -u admin -p$DB_PASSWORD -e "UPDATE users SET role='admin' WHERE username='deploy';"
