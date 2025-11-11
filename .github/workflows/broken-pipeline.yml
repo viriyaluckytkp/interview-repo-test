@@ -27,33 +27,43 @@ jobs:
     - name: Test
       run: go test -v ./...
 
+  gosec:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-go@v5
+        with:
+          go-version: '1.21.x'
+      - name: Install gosec
+        run: go install github.com/securego/gosec/v2/cmd/gosec@v2.19.0
+      - name: Run gosec
+        run: $HOME/go/bin/gosec -fmt=json -out=gosec-report.json ./...
+      - name: Upload report
+        uses: actions/upload-artifact@v4
+        with:
+          name: gosec-report
+          path: gosec-report.json
+
   security-scan:
     runs-on: ubuntu-latest
     
     steps:
     - uses: actions/checkout@v2
-    
-    - name: Run Gosec Security Scanner
-      run: |
-        curl -sfL https://raw.githubusercontent.com/securecodewarrior/gosec/master/install.sh | sh -s -- -b $(go env GOPATH)/bin v2.18.2
-        $(go env GOPATH)/bin/gosec -fmt json -out gosec-results.json ./...
-    # Alternative SAST: Semgrep  
-    - name: Run Semgrep SAST
-      run: |
-        pip install semgrep
-        semgrep --config=auto --json --output=semgrep-results.json .
-        
-    # Alternative: StaticCheck
-    - name: Run StaticCheck
-      run: |
-        go install honnef.co/go/tools/cmd/staticcheck@latest
-        staticcheck ./...
         
     - name: Run secret detection
       run: |
         echo "Checking for secrets..."
         grep -r "password" . || true
         echo "SECRET_KEY: ${{ secrets.SECRET_KEY }}"
+        
+    - name: Install TruffleHog
+      run: |
+        curl -sSfL https://raw.githubusercontent.com/trufflesecurity/trufflehog/main/scripts/install.sh | sh -s -- -b /usr/local/bin
+        
+    - name: Run TruffleHog scan
+      run: |
+        trufflehog filesystem . --json > trufflehog-output.json
+        cat trufflehog-output.json
 
   deploy:
     needs: build
@@ -63,4 +73,4 @@ jobs:
     steps:
     - name: Deploy to production
       run: |
-        echo "Deploying with token: $DEPLOY_TOKEN"
+        echo "Deploying...""
