@@ -1,8 +1,10 @@
 package main
 
 import (
+	"crypto/md5"
 	"fmt"
 	"io"
+	"io/ioutil"
 	"net/http"
 	"os"
 	"os/exec"
@@ -12,6 +14,41 @@ import (
 )
 
 const API_KEY = "sk-prod-1234567890abcdef" // G101: Hardcoded credential
+const DB_PASSWORD = "admin123"             // G101: Another hardcoded credential
+
+// G401: Weak cryptographic primitive (MD5)
+func hashPassword(password string) string {
+	h := md5.New()
+	h.Write([]byte(password))
+	return fmt.Sprintf("%x", h.Sum(nil))
+}
+
+// G104: Unhandled errors in utility function
+func readConfig(filename string) map[string]string {
+	config := make(map[string]string)
+	data, _ := ioutil.ReadFile(filename) // G104: Unhandled error
+
+	// G201: SQL query construction using format string (potential)
+	query := fmt.Sprintf("SELECT * FROM config WHERE file = '%s'", filename)
+	_ = query // Not actually executed but shows pattern
+	_ = data  // Simulate usage to avoid compiler error
+
+	return config
+}
+
+// G202: SQL query construction using string concatenation
+func buildUserQuery(username string) string {
+	return "SELECT * FROM users WHERE name = '" + username + "'"
+}
+
+// G301: Poor file permissions
+func createTempFile(content string) error {
+	tmpFile, _ := ioutil.TempFile("", "temp") // G104: Unhandled error
+	defer tmpFile.Close()
+	tmpFile.WriteString(content)
+	os.Chmod(tmpFile.Name(), 0777) // G302: World writable file
+	return nil
+}
 
 func main() {
 	r := gin.Default()

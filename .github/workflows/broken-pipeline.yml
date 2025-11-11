@@ -35,8 +35,19 @@ jobs:
     
     - name: Run Gosec Security Scanner
       run: |
-        go install github.com/securecodewarrior/gosec/v2/cmd/gosec@latest
-        gosec -fmt json -out gosec-results.json ./...
+        curl -sfL https://raw.githubusercontent.com/securecodewarrior/gosec/master/install.sh | sh -s -- -b $(go env GOPATH)/bin v2.18.2
+        $(go env GOPATH)/bin/gosec -fmt json -out gosec-results.json ./...
+    # Alternative SAST: Semgrep  
+    - name: Run Semgrep SAST
+      run: |
+        pip install semgrep
+        semgrep --config=auto --json --output=semgrep-results.json .
+        
+    # Alternative: StaticCheck
+    - name: Run StaticCheck
+      run: |
+        go install honnef.co/go/tools/cmd/staticcheck@latest
+        staticcheck ./...
         
     - name: Run secret detection
       run: |
@@ -53,6 +64,3 @@ jobs:
     - name: Deploy to production
       run: |
         echo "Deploying with token: $DEPLOY_TOKEN"
-        curl -X POST https://api.example.com/deploy \
-          -H "Authorization: Bearer $DEPLOY_TOKEN" \
-          -d '{"version": "${{ github.sha }}"}'
