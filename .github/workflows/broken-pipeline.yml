@@ -5,6 +5,16 @@ on:
     branches: [ main, feature/* ]
   pull_request:
     branches: [ main ]
+  workflow_dispatch:
+     inputs:
+          environment:
+            description: 'Deployment environment'
+            required: true
+            default: 'staging'
+          version:
+            description: 'Application version'
+            required: false
+            type: string
 
 env:
   DEPLOY_TOKEN: sk-deploy-1234567890abcdef
