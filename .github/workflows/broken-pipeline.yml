@@ -27,7 +27,7 @@ jobs:
     - name: Test
       run: go test -v ./...
 
-  gosec:
+  security-scan-sast:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v5
@@ -44,18 +44,11 @@ jobs:
           name: gosec-report
           path: gosec-report.json
 
-  security-scan:
+  security-scan-secret:
     runs-on: ubuntu-latest
     
     steps:
     - uses: actions/checkout@v2
-        
-    - name: Run secret detection
-      run: |
-        echo "Checking for secrets..."
-        grep -r "password" . || true
-        echo "SECRET_KEY: ${{ secrets.SECRET_KEY }}"
-        
     - name: Install TruffleHog
       run: |
         curl -sSfL https://raw.githubusercontent.com/trufflesecurity/trufflehog/main/scripts/install.sh | sh -s -- -b /usr/local/bin
